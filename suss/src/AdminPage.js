@@ -13,11 +13,9 @@ export default function AdminPage() {
 
   if (!isAuthenticated || !user || !ADMIN_EMAILS.includes(user.email)) {
     return (
-      <Container sx={{ py: 6 }}>
-        <Typography variant="h6">
-          You must be logged in as an admin to view this page.
-        </Typography>
-        <Button variant="contained" sx={{ mt: 2 }} onClick={() => navigate('/')}>
+      <Container sx={{ py: 10 }}>
+        <Typography variant="h6">You must be logged in as an admin to view this page.</Typography>
+        <Button variant="contained" sx={{ mt: 3 }} onClick={() => navigate('/')}>
           Go Home
         </Button>
       </Container>
@@ -25,38 +23,36 @@ export default function AdminPage() {
   }
 
   return (
-    <Container sx={{ py: 6 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container sx={{ py: 10 }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
         Admin Panel
       </Typography>
-      <Button
-        variant="outlined"
-        onClick={() => {
-          logout({ returnTo: window.location.origin });
-        }}
-      >
+      <Button variant="outlined" onClick={() => logout({ returnTo: window.location.origin })}>
         Logout
       </Button>
-
-      <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ mt: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
         {jobs.map((job, index) => (
           <motion.div
             key={job.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
           >
-            <Card sx={{ p: 2 }} elevation={3}>
+            <Card sx={{ p: 3, borderRadius: 2 }}>
               <CardContent>
-                <Typography variant="h6">{job.title}</Typography>
-                <Typography variant="subtitle1">{job.company}</Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {job.title}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>
+                  {job.company}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
                   {job.description}
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+                <Typography variant="body2" sx={{ mb: 2 }}>
                   Location: {job.location}
                 </Typography>
-                <Box sx={{ mt: 2, display: 'flex', gap: 2 }}>
+                <Box sx={{ display: 'flex', gap: 2 }}>
                   {!job.isApproved && (
                     <Button variant="contained" onClick={() => approveJob(job.id)}>
                       Approve
@@ -67,12 +63,7 @@ export default function AdminPage() {
                   </Button>
                 </Box>
                 {job.isApproved && (
-                  <Typography
-                    variant="caption"
-                    color="green"
-                    display="block"
-                    sx={{ mt: 1 }}
-                  >
+                  <Typography variant="caption" color="green" sx={{ mt: 1 }}>
                     Approved
                   </Typography>
                 )}

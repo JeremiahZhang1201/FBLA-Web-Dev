@@ -10,29 +10,33 @@ export default function JobsPage() {
   const approvedJobs = jobs.filter((job) => job.isApproved);
 
   return (
-    <Container sx={{ py: 6 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container sx={{ py: 10 }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
         Approved Job Postings
       </Typography>
       {approvedJobs.length === 0 && (
         <Typography>No job postings available yet.</Typography>
       )}
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 4 }}>
         {approvedJobs.map((job, index) => (
           <motion.div
             key={job.id}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
+            transition={{ duration: 0.4, delay: index * 0.05 }}
           >
-            <Card elevation={3}>
-              <CardContent>
-                <Typography variant="h6">{job.title}</Typography>
-                <Typography variant="subtitle1">{job.company}</Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+            <Card sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {job.title}
+                </Typography>
+                <Typography variant="subtitle1" sx={{ color: 'text.secondary', mb: 1 }}>
+                  {job.company}
+                </Typography>
+                <Typography variant="body2" sx={{ mb: 1 }}>
                   {job.description}
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+                <Typography variant="body2" sx={{ mb: 2 }}>
                   Location: {job.location}
                 </Typography>
                 {job.location && GOOGLE_MAPS_API_KEY && (

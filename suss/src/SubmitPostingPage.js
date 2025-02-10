@@ -24,22 +24,22 @@ export default function SubmitPostingPage() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
+    <Container maxWidth="sm" sx={{ py: 10 }}>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6 }}
       >
-        <Typography variant="h4" component="h2" gutterBottom>
+        <Typography variant="h4" component="h2" gutterBottom sx={{ fontWeight: 600 }}>
           Submit a New Job Posting
         </Typography>
       </motion.div>
       <Card
         component={motion.div}
-        sx={{ mt: 2, p: 2 }}
+        sx={{ mt: 3, p: 3, borderRadius: 2 }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6 }}
       >
         <CardContent>
           <Box
@@ -77,8 +77,8 @@ export default function SubmitPostingPage() {
               onChange={(e) => setLocation(e.target.value)}
               fullWidth
             />
-            <motion.div whileHover={{ scale: 1.01 }}>
-              <Button variant="contained" type="submit" fullWidth>
+            <motion.div whileHover={{ scale: 1.02 }}>
+              <Button variant="contained" type="submit" fullWidth sx={{ py: 1.5 }}>
                 Submit
               </Button>
             </motion.div>

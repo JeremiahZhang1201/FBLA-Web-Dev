@@ -26,22 +26,24 @@ export default function MyApplicationsPage() {
   }, [isAuthenticated, user, loginWithRedirect]);
 
   return (
-    <Container sx={{ py: 6 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container sx={{ py: 10 }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
         My Applications
       </Typography>
       {applications.length === 0 ? (
         <Typography>No applications found.</Typography>
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {applications.map((app) => (
-            <Card key={app.id} elevation={3}>
-              <CardContent>
-                <Typography variant="h6">{app.jobTitle}</Typography>
-                <Typography variant="body2" color="text.secondary">
+            <Card key={app.id} elevation={3} sx={{ borderRadius: 2 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  {app.jobTitle}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   Applied on: {new Date(app.appliedAt.seconds * 1000).toLocaleDateString()}
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+                <Typography variant="body2">
                   Resume/Experience: {app.resume}
                 </Typography>
               </CardContent>

@@ -19,16 +19,15 @@ export default function ApplyPage() {
 
   if (!job) {
     return (
-      <Container sx={{ py: 6 }}>
+      <Container sx={{ py: 10 }}>
         <Typography>Job not found or not approved.</Typography>
-        <Button variant="outlined" sx={{ mt: 2 }} onClick={() => navigate('/jobs')}>
+        <Button variant="outlined" sx={{ mt: 3 }} onClick={() => navigate('/jobs')}>
           Back to Jobs
         </Button>
       </Container>
     );
   }
 
-  // Force login if not authenticated.
   if (!isAuthenticated) {
     loginWithRedirect();
     return null;
@@ -59,12 +58,12 @@ export default function ApplyPage() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ py: 6 }}>
-      <Typography variant="h5" gutterBottom>
+    <Container maxWidth="sm" sx={{ py: 10 }}>
+      <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
         Apply for {job.title}
       </Typography>
-      <Card sx={{ mt: 2 }} elevation={3}>
-        <CardContent>
+      <Card sx={{ mt: 3, borderRadius: 2 }} elevation={3}>
+        <CardContent sx={{ p: 3 }}>
           <Box
             component="form"
             onSubmit={handleApply}
@@ -83,14 +82,14 @@ export default function ApplyPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
-              label="Briefly Describe Your Experience or Paste Your Resume"
+              label="Experience/Resume"
               variant="outlined"
               multiline
               rows={4}
               value={resume}
               onChange={(e) => setResume(e.target.value)}
             />
-            <Button variant="contained" type="submit">
+            <Button variant="contained" type="submit" sx={{ mt: 2 }}>
               Submit Application
             </Button>
           </Box>
