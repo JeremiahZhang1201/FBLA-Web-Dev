@@ -1,39 +1,75 @@
+// src/JobContext.js
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import { db } from './firebase';
-import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 
 const JobContext = createContext();
+const API_URL = 'http://localhost:6969'; // or fallback if needed
 
 export function JobProvider({ children }) {
   const [jobs, setJobs] = useState([]);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, 'jobs'), (snapshot) => {
-      const jobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setJobs(jobsData);
-    });
-    return () => unsubscribe();
+    fetchJobs();
   }, []);
 
-  const addJob = async (title, company, description, location) => {
-    const newJob = {
-      title,
-      company,
-      description,
-      location,
-      isApproved: false,
-      createdAt: new Date(),
-    };
-    await addDoc(collection(db, 'jobs'), newJob);
+  const fetchJobs = async () => {
+    try {
+      const response = await fetch(`${API_URL}/jobs`);
+      const data = await response.json();
+      setJobs(data);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+    }
+  };
+
+  const addJob = async (
+    title,
+    company,
+    description,
+    location,
+    coursesWanted,
+    minGPA,
+    intendedMajor
+  ) => {
+    try {
+      await fetch(`${API_URL}/jobs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          company,
+          description,
+          location,
+          coursesWanted,
+          minGPA,
+          intendedMajor,
+        }),
+      });
+      fetchJobs();
+    } catch (error) {
+      console.error('Error adding job:', error);
+    }
   };
 
   const approveJob = async (id) => {
-    const jobRef = doc(db, 'jobs', id);
-    await updateDoc(jobRef, { isApproved: true });
+    try {
+      await fetch(`${API_URL}/jobs/${id}/approve`, {
+        method: 'PUT',
+      });
+      fetchJobs();
+    } catch (error) {
+      console.error('Error approving job:', error);
+    }
   };
 
   const deleteJob = async (id) => {
-    await deleteDoc(doc(db, 'jobs', id));
+    try {
+      await fetch(`${API_URL}/jobs/${id}`, {
+        method: 'DELETE',
+      });
+      fetchJobs();
+    } catch (error) {
+      console.error('Error deleting job:', error);
+    }
   };
 
   return (

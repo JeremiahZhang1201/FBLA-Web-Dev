@@ -1,19 +1,20 @@
+// src/ApplyPage.js
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Container, Typography, Card, CardContent, TextField, Button, Box } from '@mui/material';
 import { useJobs } from './JobContext';
-import { useAuth0 } from '@auth0/auth0-react';
-import { db } from './firebase';
-import { collection, addDoc } from 'firebase/firestore';
+import { useAuth } from './FirebaseAuthContext';
+
+const API_URL = 'http://localhost:6969'; // or fallback if needed
 
 export default function ApplyPage() {
   const { jobs } = useJobs();
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { user, isAuthenticated, loginWithGoogle } = useAuth();
 
-  const job = jobs.find((j) => j.id === jobId && j.isApproved);
-  const [studentName, setStudentName] = useState('');
+  const job = jobs.find((j) => j._id === jobId && j.isApproved);
+  const [studentName, setStudentName] = useState(user?.displayName || '');
   const [email, setEmail] = useState(user?.email || '');
   const [resume, setResume] = useState('');
 
@@ -29,7 +30,7 @@ export default function ApplyPage() {
   }
 
   if (!isAuthenticated) {
-    loginWithRedirect();
+    loginWithGoogle();
     return null;
   }
 
@@ -37,14 +38,18 @@ export default function ApplyPage() {
     e.preventDefault();
     if (studentName && email && resume) {
       try {
-        await addDoc(collection(db, 'applications'), {
-          jobId: job.id,
-          jobTitle: job.title,
-          userId: user.sub,
-          userName: studentName,
-          email: email,
-          resume: resume,
-          appliedAt: new Date(),
+        await fetch(`${API_URL}/applications`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jobId: job._id,
+            jobTitle: job.title,
+            userId: user.uid,
+            userName: studentName,
+            email,
+            resume,
+            appliedAt: new Date(),
+          }),
         });
         alert(`Application submitted for ${job.title}!`);
         navigate('/jobs');
@@ -64,11 +69,7 @@ export default function ApplyPage() {
       </Typography>
       <Card sx={{ mt: 3, borderRadius: 2 }} elevation={3}>
         <CardContent sx={{ p: 3 }}>
-          <Box
-            component="form"
-            onSubmit={handleApply}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
-          >
+          <Box component="form" onSubmit={handleApply} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
               label="Your Name"
               variant="outlined"

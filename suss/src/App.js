@@ -1,3 +1,4 @@
+// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { JobProvider } from './JobContext';
@@ -13,23 +14,13 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     mode: 'light',
-    primary: {
-      main: '#000000',
-    },
-    background: {
-      default: '#ffffff',
-      paper: '#ffffff',
-    },
-    text: {
-      primary: '#000000',
-      secondary: '#666666',
-    },
+    primary: { main: '#000000' },
+    background: { default: '#ffffff', paper: '#ffffff' },
+    text: { primary: '#000000', secondary: '#666666' },
   },
   typography: {
     fontFamily: '"Inter", "Roboto", sans-serif',
-    button: {
-      textTransform: 'none',
-    },
+    button: { textTransform: 'none' },
   },
   components: {
     MuiButton: {

@@ -1,29 +1,31 @@
+// src/MyApplicationsPage.js
 import React, { useState, useEffect } from 'react';
 import { Container, Typography, Box, Card, CardContent } from '@mui/material';
-import { useAuth0 } from '@auth0/auth0-react';
-import { db } from './firebase';
-import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
+import { useAuth } from './FirebaseAuthContext';
+
+const API_URL = 'http://localhost:6969';
 
 export default function MyApplicationsPage() {
-  const { user, isAuthenticated, loginWithRedirect } = useAuth0();
+  const { user, isAuthenticated, loginWithGoogle } = useAuth();
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
-      loginWithRedirect();
+      loginWithGoogle();
       return;
     }
-    const q = query(
-      collection(db, 'applications'),
-      where('userId', '==', user.sub),
-      orderBy('appliedAt', 'desc')
-    );
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setApplications(apps);
-    });
-    return () => unsubscribe();
-  }, [isAuthenticated, user, loginWithRedirect]);
+    const fetchApplications = async () => {
+      try {
+        const queryString = new URLSearchParams({ userId: user.uid }).toString();
+        const response = await fetch(`${API_URL}/applications?${queryString}`);
+        const data = await response.json();
+        setApplications(data);
+      } catch (error) {
+        console.error('Error fetching applications:', error);
+      }
+    };
+    fetchApplications();
+  }, [isAuthenticated, user, loginWithGoogle]);
 
   return (
     <Container sx={{ py: 10 }}>
@@ -35,17 +37,15 @@ export default function MyApplicationsPage() {
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {applications.map((app) => (
-            <Card key={app.id} elevation={3} sx={{ borderRadius: 2 }}>
+            <Card key={app._id} elevation={3} sx={{ borderRadius: 2 }}>
               <CardContent sx={{ p: 3 }}>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   {app.jobTitle}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                  Applied on: {new Date(app.appliedAt.seconds * 1000).toLocaleDateString()}
+                  Applied on: {new Date(app.appliedAt).toLocaleDateString()}
                 </Typography>
-                <Typography variant="body2">
-                  Resume/Experience: {app.resume}
-                </Typography>
+                <Typography variant="body2">Resume/Experience: {app.resume}</Typography>
               </CardContent>
             </Card>
           ))}

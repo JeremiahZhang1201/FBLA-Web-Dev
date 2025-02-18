@@ -1,13 +1,14 @@
+// src/NavigationBar.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth } from './FirebaseAuthContext';
 
 export default function NavigationBar() {
-  const { isAuthenticated, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated, loginWithGoogle, logout } = useAuth();
 
   return (
     <AppBar
@@ -36,11 +37,11 @@ export default function NavigationBar() {
             </Button>
           )}
           {isAuthenticated ? (
-            <Button sx={{ color: '#000' }} onClick={() => logout({ returnTo: window.location.origin })}>
+            <Button sx={{ color: '#000' }} onClick={logout}>
               Logout
             </Button>
           ) : (
-            <Button sx={{ color: '#000' }} onClick={() => loginWithRedirect()}>
+            <Button sx={{ color: '#000' }} onClick={loginWithGoogle}>
               Login
             </Button>
           )}
