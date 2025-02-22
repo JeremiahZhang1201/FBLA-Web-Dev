@@ -11,7 +11,7 @@ export default function AdminPage() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
-  // Hardcode admin emails here
+  // Set the admin email to shamsizafir@gmail.com
   const ADMIN_EMAILS = ['shamsizafir@gmail.com'];
 
   if (!isAuthenticated || !user || !ADMIN_EMAILS.includes(user.email)) {

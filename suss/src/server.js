@@ -1,36 +1,34 @@
+// server.js
 const path = require('path');
-// 1) Load .env from the parent folder (../.env)
+// Load .env from the parent folder
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// 2) Read environment variables
-//    We will FORCE the server to run on 6969, ignoring .env if you'd like.
-const MONGODB_URI = process.env.MONGODB_URI || '';
-// If you want to allow .env to override it, do: const PORT = process.env.PORT || 6969;
-// But let's always do 6969 as you requested:
 const PORT = 6969;
-
-// 3) Print them out (optional)
-console.log('MONGODB_URI =>', MONGODB_URI);
+console.log('MONGODB_URI =>', process.env.MONGODB_URI);
 console.log('PORT =>', PORT);
 
-// 4) Initialize Express
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 5) Connect to MongoDB (remove deprecated options)
-mongoose.connect(MONGODB_URI);
-const db = mongoose.connection;
-db.on('error', (err) => console.error('MongoDB connection error:', err));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
+// Connect to MongoDB with added connection options and logging
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true, // Warning: these options are deprecated in driver 4.x but remain harmless
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Connected to MongoDB');
+  })
+  .catch((err) => {
+    console.error('MongoDB connection error:', err);
+  });
 
-// 6) Define Mongoose Schemas & Models
+// Mongoose Schemas & Models
 
 // Job schema
 const jobSchema = new mongoose.Schema({
@@ -60,7 +58,7 @@ const applicationSchema = new mongoose.Schema({
 
 const Application = mongoose.model('Application', applicationSchema);
 
-// 7) Routes
+// Routes
 
 // GET all jobs
 app.get('/jobs', async (req, res) => {
@@ -73,8 +71,9 @@ app.get('/jobs', async (req, res) => {
   }
 });
 
-// POST a new job
+// POST a new job (with added logging)
 app.post('/jobs', async (req, res) => {
+  console.log('Received job posting:', req.body);
   try {
     const {
       title,
@@ -96,9 +95,10 @@ app.post('/jobs', async (req, res) => {
       intendedMajor,
     });
     await newJob.save();
+    console.log('Job saved successfully:', newJob);
     res.status(201).json(newJob);
   } catch (error) {
-    console.error(error);
+    console.error('Error saving job:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -157,7 +157,7 @@ app.post('/applications', async (req, res) => {
   }
 });
 
-// GET applications (optional userId filter)
+// GET applications (optionally filtered by userId)
 app.get('/applications', async (req, res) => {
   try {
     const { userId } = req.query;
@@ -170,7 +170,7 @@ app.get('/applications', async (req, res) => {
   }
 });
 
-// 8) Start the server
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
