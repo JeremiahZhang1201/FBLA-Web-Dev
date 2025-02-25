@@ -1,4 +1,0 @@
-1. Need to fix backend, connects to mongodb on server.js but nothing hits the db, nothing is in the collection
-2. Auth isn't going through, closes page once opens(prolly worng url)
-3. make it look better, mid ui look at linkedin
-4. verify admin page

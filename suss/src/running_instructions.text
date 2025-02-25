@@ -1,0 +1,6 @@
+1. firebase emulators:start 
+2. mongod --dbpath ~/data/db
+3. cd src, node server.js
+4. cd suss, npm start
+
+mv /Users/zafirshamsi/Downloads/mavexicon.png /Users/zafirshamsi/tsuki/suss/src/

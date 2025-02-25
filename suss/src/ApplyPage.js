@@ -5,18 +5,19 @@ import { Container, Typography, Card, CardContent, TextField, Button, Box } from
 import { useJobs } from './JobContext';
 import { useAuth } from './FirebaseAuthContext';
 
-const API_URL = 'http://localhost:6969'; // or fallback if needed
+const API_URL = 'http://localhost:6969'; // or your actual server
 
 export default function ApplyPage() {
   const { jobs } = useJobs();
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const { user, isAuthenticated, loginWithGoogle } = useAuth();
+  const { user, isAuthenticated } = useAuth();
 
   const job = jobs.find((j) => j._id === jobId && j.isApproved);
   const [studentName, setStudentName] = useState(user?.displayName || '');
   const [email, setEmail] = useState(user?.email || '');
-  const [resume, setResume] = useState('');
+  const [resumeText, setResumeText] = useState('');
+  const [resumeFile, setResumeFile] = useState(null); // file upload
 
   if (!job) {
     return (
@@ -30,27 +31,36 @@ export default function ApplyPage() {
   }
 
   if (!isAuthenticated) {
-    loginWithGoogle();
+    navigate('/signup');
     return null;
   }
 
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setResumeFile(e.target.files[0]);
+    }
+  };
+
   const handleApply = async (e) => {
     e.preventDefault();
-    if (studentName && email && resume) {
+    if (studentName && email && (resumeText || resumeFile)) {
       try {
+        const formData = new FormData();
+        formData.append('jobId', job._id);
+        formData.append('jobTitle', job.title);
+        formData.append('userId', user.uid);
+        formData.append('userName', studentName);
+        formData.append('email', email);
+        formData.append('resume', resumeText);
+        if (resumeFile) {
+          formData.append('resumeFile', resumeFile);
+        }
+
         await fetch(`${API_URL}/applications`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jobId: job._id,
-            jobTitle: job.title,
-            userId: user.uid,
-            userName: studentName,
-            email,
-            resume,
-            appliedAt: new Date(),
-          }),
+          body: formData,
         });
+
         alert(`Application submitted for ${job.title}!`);
         navigate('/jobs');
       } catch (error) {
@@ -58,7 +68,7 @@ export default function ApplyPage() {
         alert('Error submitting application.');
       }
     } else {
-      alert('Please fill out all fields.');
+      alert('Please fill out all required fields (name, email, and resume).');
     }
   };
 
@@ -83,13 +93,22 @@ export default function ApplyPage() {
               onChange={(e) => setEmail(e.target.value)}
             />
             <TextField
-              label="Experience/Resume"
+              label="Additional Experience / Cover Letter"
               variant="outlined"
               multiline
               rows={4}
-              value={resume}
-              onChange={(e) => setResume(e.target.value)}
+              value={resumeText}
+              onChange={(e) => setResumeText(e.target.value)}
             />
+            <Typography variant="body2" sx={{ mt: 1 }}>
+              Upload Resume (PDF, DOC, etc.)
+            </Typography>
+            <Button variant="outlined" component="label">
+              Choose File
+              <input type="file" hidden onChange={handleFileChange} />
+            </Button>
+            {resumeFile && <Typography>Selected File: {resumeFile.name}</Typography>}
+
             <Button variant="contained" type="submit" sx={{ mt: 2 }}>
               Submit Application
             </Button>
